@@ -13,7 +13,6 @@ class BaseSmoker(abc.ABC):
         self.logger = logging.getLogger(f"{LOGGER_NAME}.{self.__class__.__name__}")
         self.iso_now_time = datetime.datetime.now().isoformat()
 
-    # smoke is what we sell: https://www.youtube.com/watch?v=lNhpX2UQsmE
     @abc.abstractmethod
-    def sell(self):
+    def run(self):
         pass

@@ -10,9 +10,9 @@ from smoker import BaseSmoker
 
 class SecGroupOpenSmoker(BaseSmoker):
 
-    def sell(self):
-        description = "Cloud Droid smoke security group " + self.iso_now_time
+    def run(self):
         name = "cloud_droid_smoke_group"
+        description = "Cloud Droid smoke security group " + self.iso_now_time
         ec2 = boto3.client("ec2")
         response = ec2.describe_vpcs()
         vpc_id = response.get("Vpcs", [{}])[0].get("VpcId", "")

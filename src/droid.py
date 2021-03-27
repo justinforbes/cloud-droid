@@ -70,13 +70,22 @@ def main(args):
 
 if __name__ == '__main__':
     home()
-    print('CLOUD-DROID is the redteam as a code for Incident Response Automated Simulations \n this is a simple scripting to simulta differents TTPs.\n The final in order to generate smoke events and test alerts in your SIEM. \n https://github.com/cloud-sniper/cloud-droid')
+    msg = (
+        "Cloud Droid is the redteam as a code for Incident Response "
+        "Automated 'Simulations'.\n This is a simple scripting tool to create "
+        "differents TTPs.\n The goal is to generate actual smoke events "
+        "and test alerts in your SIEM.\n "
+        "https://github.com/cloud-sniper/cloud-droid"
+    )
+    print(msg)
     droid_parser = argparse.ArgumentParser()
-    droid_parser.version = 'version: 2.0 - https://github.com/cloud-sniper/cloud-droid'
+    droid_parser.version = \
+        "version: 2.0 - https://github.com/cloud-sniper/cloud-droid"
     droid_parser.add_argument(
         '-s', help='smoker to run', dest='smoker', type=str, required=True)
     droid_parser.add_argument(
-        '-b', help='save the results into a bucket', dest='bucket', type=bool, required=False)
+        '-b', help='save the results into a bucket',
+        dest='bucket', type=bool, required=False)
     args = droid_parser.parse_args()
     event_map = {'smoker': args.smoker, 'bucket': args.bucket}
     main(event_map)
