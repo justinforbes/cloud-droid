@@ -33,9 +33,6 @@ def get_class_name_from_smoker_name(smoker_name):
 
 def run_smoker(cloud_provider, smoker_name):
     smoker_class = get_class_name_from_smoker_name(smoker_name)
-    print()
-    print(smoker_class)
-    print()
     exec(f"from smokers.{cloud_provider}.{smoker_name} import {smoker_class}")
     eval(f"{smoker_class}().simulate()")
 
@@ -44,6 +41,7 @@ def main(cloud_provider, smoker_name, to_bucket, run_all):
     # TODO: implement 'to_bucket'
     if run_all:
         smoker_names = list_smokers_fnames(cloud_provider)
+        smoker_names = [x[:-3] for x in smoker_names]
     else:
         smoker_names = [smoker_name]
 
@@ -61,6 +59,7 @@ if __name__ == "__main__":
         "https://github.com/cloud-sniper/cloud-droid"
     )
     print(msg)
+    print()
 
     parser = argparse.ArgumentParser(
         description="Create the template to implement your own smoker."
@@ -71,6 +70,7 @@ if __name__ == "__main__":
     )
     smoker_name_arg = parser.add_argument(
         "smoker_name",
+        nargs='?',
         default="",
         help="Name of the smoker to be executed. Example: s3_public",
     )
@@ -91,11 +91,12 @@ if __name__ == "__main__":
     #validate smoker name:
     smokers_fnames = list_smokers_fnames(args.cloud_provider)
     smokers_names = [x[:-3] for x in smokers_fnames]
-    if args.smoker_name == "" and not args.all:
-        raise argparse.ArgumentError(
-            smoker_name_arg,
-            f"smoker_name must be set, unless --all option is passed."
-        )
+    if args.smoker_name == "":
+        if not args.all:
+            raise argparse.ArgumentError(
+                smoker_name_arg,
+                f"smoker_name must be set, unless --all option is passed."
+            )
     elif args.smoker_name not in smokers_names:
         nl = "\n"
         bullet = f"{nl} *"
