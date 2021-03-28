@@ -16,7 +16,7 @@ from requests.packages.urllib3.exceptions import InsecureRequestWarning
 ##### define standard configurations ####
 
 # Setup the verbose logger
-logger = logging.getLogger('cloud-droid')
+logger = logging.getLogger("cloud-droid")
 
 # Setup timestamp
 iso_now_time = datetime.datetime.now().isoformat()
@@ -29,18 +29,18 @@ def S3PublicSmoker():
     TAG = [
         {"Key": "Department", "Value": "security"},
         {"Key": "Program", "Value": "droid"},
-        {"Key": "Purpose", "Value": "droid"}
+        {"Key": "Purpose", "Value": "droid"},
     ]
     # Create s3 bucket
-    s3 = boto3.client('s3')
-    logger.info("Creating bucket named: "+bucket_name+" "+iso_now_time)
-    s3_smoke = s3.create_bucket(ACL='public-read', Bucket=bucket_name)
-    logger.info("detailed info creation: "+str(s3_smoke))
+    s3 = boto3.client("s3")
+    logger.info("Creating bucket named: " + bucket_name + " " + iso_now_time)
+    s3_smoke = s3.create_bucket(ACL="public-read", Bucket=bucket_name)
+    logger.info("detailed info creation: " + str(s3_smoke))
     # delete objects
-    s3o = boto3.resource('s3')
+    s3o = boto3.resource("s3")
     bucket = s3o.Bucket(bucket_name)
     bucket.objects.all().delete()
     # delete bucket now
     delete_bucket = s3.delete_bucket(Bucket=bucket_name)
-    logger.info("detailed info delete: "+str(delete_bucket))
-    logger.info(iso_now_time + ' done!')
+    logger.info("detailed info delete: " + str(delete_bucket))
+    logger.info(iso_now_time + " done!")

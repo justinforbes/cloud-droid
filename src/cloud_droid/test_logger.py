@@ -2,8 +2,10 @@
 
 import logging
 
-logger = logging.getLogger('cloud-droid')
-log_format = "%(asctime)s [%(levelname)s]: %(filename)s(%(funcName)s:%(lineno)s) >> %(message)s"
+logger = logging.getLogger("cloud-droid")
+log_format = (
+    "%(asctime)s [%(levelname)s]: %(filename)s(%(funcName)s:%(lineno)s) >> %(message)s"
+)
 log_date_format = "%m/%d/%Y %I:%M:%S %p"
 logFormatter = logging.Formatter(log_format)
 

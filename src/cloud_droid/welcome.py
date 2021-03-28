@@ -5,8 +5,9 @@ from pyfiglet import figlet_format
 import sys
 
 from colorama import init
+
 init(strip=not sys.stdout.isatty())  # strip colors if stdout is redirected
 
 
 def home():
-    cprint(figlet_format(' CLOUD-DROID '))
+    cprint(figlet_format(" CLOUD-DROID "))

@@ -3,12 +3,10 @@
 import boto3
 from botocore.exceptions import ClientError
 
-from aws_smoker import AwsSmoker
+from cloud_droid.aws_smoker import AwsSmoker
 
 
-class {{smoker_class_name}}(AwsSmoker):
-
+class S3WhateverSmoker(AwsSmoker):
     def simulate(self):
         # Implement your function here
         pass
-

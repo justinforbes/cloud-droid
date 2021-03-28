@@ -53,15 +53,15 @@ def s3Log(body):
     # This take the data form the handler and put a bulk of events into a
     # s3 bucket with gzip file.
     buf = io.BytesIO()
-    s3 = boto3.resource('s3', region_name=os.environ['AWS_REGION'])
+    s3 = boto3.resource("s3", region_name=os.environ["AWS_REGION"])
     year = datetime.datetime.now().strftime("%Y")
     month = datetime.datetime.now().strftime("%m")
-    filename = "droid-LOG" + 'T' + iso_now_time + ".log.gz"
-    bucketID = os.environ['BUCKETS3']
-    key = 'logs/droid/' + year + '/' + month + '/' + filename
+    filename = "droid-LOG" + "T" + iso_now_time + ".log.gz"
+    bucketID = os.environ["BUCKETS3"]
+    key = "logs/droid/" + year + "/" + month + "/" + filename
 
-    with gzip.GzipFile(fileobj=buf, mode='wb') as gfh:
-        with io.TextIOWrapper(gfh, encoding='utf-8') as wrapper:
+    with gzip.GzipFile(fileobj=buf, mode="wb") as gfh:
+        with io.TextIOWrapper(gfh, encoding="utf-8") as wrapper:
             wrapper.write(body.getvalue())
     buf.seek(0)
     s3.Bucket(bucketID).put_object(Key=key, Body=buf)

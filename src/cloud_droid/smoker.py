@@ -14,5 +14,5 @@ class BaseSmoker(abc.ABC):
         self.iso_now_time = datetime.datetime.now().isoformat()
 
     @abc.abstractmethod
-    def run(self):
+    def simulate(self):
         pass

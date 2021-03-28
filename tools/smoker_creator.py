@@ -1,20 +1,23 @@
 import os
-import re
 import sys
-
 import argparse
 from jinja2 import Template
 
-
 WORKING_DIR = os.path.dirname(os.path.realpath(__file__))
-SMOKERS_DIR = os.path.join(WORKING_DIR, "..", "src", "cloud_droid", "smokers")
+CD_DIR = os.path.join(WORKING_DIR, "..", "src", "cloud_droid")
+sys.path.append(CD_DIR)
+
+from droid import list_cloud_providers, list_smokers_fnames
+
+
+SMOKERS_DIR = os.path.join(CD_DIR, "smokers")
 SMOKERS_FNAME_RE = r"^[^_]+_[^_]+.*.py$"
 
 
 def parse_smoker_names(smoker_fname):
     smoker_name = smoker_fname[:-3]
-    split = smoker_name.split("_")
-    return split[0], "_".join(split[1:])
+    components = smoker_name.split("_")
+    return components[0], "_".join(components[1:])
 
 
 def get_class_name_from_args(service_name, smoker_action):
@@ -23,18 +26,22 @@ def get_class_name_from_args(service_name, smoker_action):
     )
 
 
-def list_cloud_providers():
-    cloud_providers = os.listdir(SMOKERS_DIR)
-    cloud_providers = map(lambda x: os.path.join(SMOKERS_DIR, x), cloud_providers)
-    cloud_providers = filter(lambda x: os.path.isdir(x), cloud_providers)
-    return map(lambda x: os.path.basename(x), cloud_providers)
+# def list_cloud_providers():
+#     cloud_providers = os.listdir(SMOKERS_DIR)
+#     cloud_providers = map(lambda x: os.path.join(SMOKERS_DIR, x), cloud_providers)
+#     cloud_providers = filter(lambda x: os.path.isdir(x), cloud_providers)
+#     return map(lambda x: os.path.basename(x), cloud_providers)
 
 
 def list_existing_services(cloud_provider):
-    smokers = os.listdir(os.path.join(SMOKERS_DIR, cloud_provider))
-    smokers = filter(lambda x: re.match(SMOKERS_FNAME_RE, x), smokers)
+    # smokers = os.listdir(os.path.join(SMOKERS_DIR, cloud_provider))
+    # smokers = filter(lambda x: re.match(SMOKERS_FNAME_RE, x), smokers)
+    # parsed_smokers = map(parse_smoker_names, smokers)
+    # return [name[0] for name in parsed_smokers]
+    smokers = list_smokers_fnames(cloud_provider)
     parsed_smokers = map(parse_smoker_names, smokers)
     return [name[0] for name in parsed_smokers]
+
 
 
 def check_service_name(value):
@@ -60,7 +67,7 @@ def check_smoker_action(value):
 def load_template(cloud_provider, class_name):
     template_path = os.path.join(WORKING_DIR, cloud_provider, "template.j2")
     if not os.path.exists(template_path):
-        sys.stderr.write(f"No template file {template_path}")
+        sys.stderr.write(f"No template file {template_path}\n")
         sys.exit(1)
 
     with open(template_path) as fd:
@@ -85,7 +92,7 @@ if __name__ == "__main__":
         description="Create the template to implement your own smoker.",
     )
     parser.add_argument(
-        "cloud_provider", help="Cloud provider", choices=list(list_cloud_providers()),
+        "cloud_provider", help="Cloud provider", choices=list_cloud_providers(),
     )
     parser.add_argument(
         "service_name",
@@ -97,7 +104,7 @@ if __name__ == "__main__":
         type=check_smoker_action,
         help="Name of the action the smoker will perform",
     )
-    args = parser.parse_args(sys.argv[1:])
+    args = parser.parse_args()
     existing_services = list_existing_services(args.cloud_provider)
 
     if args.service_name not in existing_services:
@@ -111,14 +118,14 @@ if __name__ == "__main__":
         yes = {"yes", "y"}
         no = {"no", "n"}
         while True:
-            choice = raw_input().lower()
-            if choice in no:
+            choice = input().lower()
+            if choice in yes:
                 break
             elif choice in no:
-                sys.stderr.write("Aborting...")
+                sys.stderr.write("Aborting...\n")
                 sys.exit(1)
             else:
-                sys.stdout.write("Please respond with 'y' or 'n'")
+                sys.stdout.write("Please respond with 'y' or 'n'\n")
 
     class_name, fname, file_content = create_code(
         args.cloud_provider, args.service_name, args.smoker_action
