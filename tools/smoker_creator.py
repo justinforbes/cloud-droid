@@ -130,6 +130,5 @@ if __name__ == "__main__":
     class_name, fname, file_content = create_code(
         args.cloud_provider, args.service_name, args.smoker_action
     )
-    print()
-    print(f"Class created: {class_name}")
-    print(f"File created: {os.path.relpath(fname)}")
+    print("Class created: \n\t" + class_name)
+    print("File created: \n\t" + os.path.relpath(fname))
