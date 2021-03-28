@@ -4,3 +4,4 @@ colorama
 pyfiglet
 termcolor
 requests
+jinja2

@@ -1,52 +1,14 @@
 import os
 import re
 import sys
-import json
-import requests
 
 import argparse
-import jinja2
-
-from typing import Dict, List
+from jinja2 import Template
 
 
 WORKING_DIR = os.path.dirname(os.path.realpath(__file__))
-SMOKERS_DIR = os.path.join(WORKING_DIR, "..", "src", "smokers")
+SMOKERS_DIR = os.path.join(WORKING_DIR, "..", "src", "cloud_droid", "smokers")
 SMOKERS_FNAME_RE = r"^[^_]+_[^_]+.*.py$"
-
-
-def process_feature(  # nosec
-    external: bool,
-    table_name: str,
-    start_date_time: str = "",
-    end_date_time: str = "",
-    token: str = "",
-) -> None:
-    """Main function to process in Databricks a feature
-
-    Args:
-        table_name (str): the table that be backfilled
-        start_date_time (str): the start date, as YYYYMMDDHHMM
-        end_date_time (str): the end date, as YYYYMMDDHHMM
-        external (bool): True if this is not a feature but external source
-        token (str): your databricks API token
-    """
-    deps_fname = os.path.join(DEPS_DIR, table_name + ".yaml")
-    if not external and not os.path.exists(deps_fname):
-        deps_fname = os.path.join(DEPS_DIR, table_name + ".yml")
-        if not os.path.exists(deps_fname):
-            raise IOError(
-                f"Feature {table_name} does not have a config "
-                f"file in {DEPS_DIR} folder. If it's an "
-                f"external source, run it with option -e."
-            )
-    deps, _ = get_dependencies_from_configs(DEPS_DIR, False)
-    depending_features = _get_dependencies_for_table(deps, table_name)
-    _print_dependencies_info(depending_features)
-    if external:
-        print("This is an external source, cannot run databricks job on it...")
-    elif start_date_time and end_date_time and token:
-        _run_feature(table_name, start_date_time, end_date_time, token)
 
 
 def parse_smoker_names(smoker_fname):
@@ -57,9 +19,7 @@ def parse_smoker_names(smoker_fname):
 
 def get_class_name_from_args(service_name, smoker_action):
     return (
-        f"{service_name.title()}"
-        f"{smoker_action.title().replace('_', '')}"
-        "Smoker"
+        f"{service_name.title()}" f"{smoker_action.title().replace('_', '')}" "Smoker"
     )
 
 
@@ -79,16 +39,45 @@ def list_existing_services(cloud_provider):
 
 def check_service_name(value):
     if value.lower() != value:
-        raise argparse.ArgumentTypeError(f"service_name {value} should be in lower case")
+        raise argparse.ArgumentTypeError(
+            f"service_name {value} should be in lower case"
+        )
     if "_" in value:
-        raise argparse.ArgumentTypeError(f"service_name {value} cannot have '_' characters")
+        raise argparse.ArgumentTypeError(
+            f"service_name {value} cannot have '_' characters"
+        )
     return value
 
 
 def check_smoker_action(value):
     if value.lower() != value:
-        raise argparse.ArgumentTypeError(f"smoker_action {value} should be in lower case")
+        raise argparse.ArgumentTypeError(
+            f"smoker_action {value} should be in lower case"
+        )
     return value
+
+
+def load_template(cloud_provider, class_name):
+    template_path = os.path.join(WORKING_DIR, cloud_provider, "template.j2")
+    if not os.path.exists(template_path):
+        sys.stderr.write(f"No template file {template_path}")
+        sys.exit(1)
+
+    with open(template_path) as fd:
+        template = Template(fd.read())
+
+    return template.render(smoker_class_name=class_name)
+
+
+def create_code(cloud_provider, service_name, smoker_action):
+    class_name = get_class_name_from_args(service_name, smoker_action)
+    fname = os.path.join(
+        SMOKERS_DIR, args.cloud_provider, f"{args.service_name}_{args.smoker_action}.py"
+    )
+    file_content = load_template(cloud_provider, class_name)
+    with open(fname, "w") as fd:
+        fd.write(file_content)
+    return class_name, fname, file_content
 
 
 if __name__ == "__main__":
@@ -96,9 +85,7 @@ if __name__ == "__main__":
         description="Create the template to implement your own smoker.",
     )
     parser.add_argument(
-        "cloud_provider",
-        help="Cloud provider",
-        choices=list(list_cloud_providers()),
+        "cloud_provider", help="Cloud provider", choices=list(list_cloud_providers()),
     )
     parser.add_argument(
         "service_name",
@@ -112,20 +99,17 @@ if __name__ == "__main__":
     )
     args = parser.parse_args(sys.argv[1:])
     existing_services = list_existing_services(args.cloud_provider)
-    print()
-    print(args.cloud_provider)
-    print(args.service_name)
-    print(args.smoker_action)
-    print(existing_services)
-    print()
-    if (args.service_name not in existing_services):
+
+    if args.service_name not in existing_services:
         nl = "\n"
         bullet = f"{nl} *"
-        print(f"There are no smokers for the service {args.service_name}. "
-              f"All the services we have are: {bullet.join(existing_services)}"
-              f"{nl}{nl}Do you still want to continue with {args.service_name}? (y/n)")
-        yes = {'yes', 'y'}
-        no = {'no', 'n'}
+        print(
+            f"There are no smokers for the service {args.service_name}. "
+            f"All the services we have are: {bullet.join(existing_services)}"
+            f"{nl}{nl}Do you still want to continue with {args.service_name}? (y/n)"
+        )
+        yes = {"yes", "y"}
+        no = {"no", "n"}
         while True:
             choice = raw_input().lower()
             if choice in no:
@@ -136,8 +120,9 @@ if __name__ == "__main__":
             else:
                 sys.stdout.write("Please respond with 'y' or 'n'")
 
-    class_name = get_class_name_from_args(args.service_name, args.smoker_action)
+    class_name, fname, file_content = create_code(
+        args.cloud_provider, args.service_name, args.smoker_action
+    )
     print()
     print(f"Class created: {class_name}")
-    fname = os.path.join(SMOKERS_DIR, args.cloud_provider, f"{args.service_name}_{args.smoker_action}.py")
     print(f"File created: {os.path.relpath(fname)}")
