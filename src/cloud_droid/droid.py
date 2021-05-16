@@ -2,22 +2,25 @@ import os
 import argparse
 import re
 
-WORKING_DIR = os.path.dirname(os.path.realpath(__file__))
-SMOKERS_DIR = os.path.join(WORKING_DIR, "smokers")
+
+SCRIPT_DIR = os.path.dirname(os.path.realpath(__file__))
+PROVIDERS_DIR = SCRIPT_DIR
+SMOKERS_DIR_NAME = "smokers"
 SMOKERS_FNAME_RE = r"^[^_]+_[^_]+.*.py$"
 
 from welcome import home
 
 
 def list_cloud_providers():
-    cloud_providers = os.listdir(SMOKERS_DIR)
-    cloud_providers = map(lambda x: os.path.join(SMOKERS_DIR, x), cloud_providers)
+    cloud_providers = os.listdir(PROVIDERS_DIR)
+    cloud_providers = map(lambda x: os.path.join(PROVIDERS_DIR, x), cloud_providers)
     cloud_providers = filter(lambda x: os.path.isdir(x), cloud_providers)
+    cloud_providers = filter(lambda x: not os.path.basename(x).startswith("__"), cloud_providers)
     return list(map(lambda x: os.path.basename(x), cloud_providers))
 
 
 def list_smokers_fnames(cloud_provider):
-    smokers = os.listdir(os.path.join(SMOKERS_DIR, cloud_provider))
+    smokers = os.listdir(os.path.join(SCRIPT_DIR, cloud_provider, SMOKERS_DIR_NAME))
     return list(filter(lambda x: re.match(SMOKERS_FNAME_RE, x), smokers))
 
 
@@ -33,7 +36,7 @@ def get_class_name_from_smoker_name(smoker_name):
 
 def run_smoker(cloud_provider, smoker_name):
     smoker_class = get_class_name_from_smoker_name(smoker_name)
-    exec(f"from smokers.{cloud_provider}.{smoker_name} import {smoker_class}")
+    exec(f"from {cloud_provider}.smokers.{smoker_name} import {smoker_class}")
     eval(f"{smoker_class}().simulate()")
 
 
@@ -62,8 +65,9 @@ if __name__ == "__main__":
     print()
 
     parser = argparse.ArgumentParser(
-        description="Create the template to implement your own smoker."
+        description="Cloud Droid smoker tests executor."
     )
+    # TODO: remove hardcoded version
     argparse.version="version: 2.0 - https://github.com/cloud-sniper/cloud-droid"
     parser.add_argument(
         "cloud_provider", help="Cloud provider", choices=list_cloud_providers(),

@@ -1,0 +1,12 @@
+import boto3
+
+from ..aws_smoker_base import AwsSmoker
+from .. import aws_utils as utils
+
+
+class {{ smoker_name }}Smoker(AwsSmoker):
+
+    def simulate(self):
+        # Implement your function here
+        print("I'm smoking, don't bother me")
+

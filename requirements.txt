@@ -1,7 +1,5 @@
-click
 boto3
 colorama
+jinja2
 pyfiglet
 termcolor
-requests
-jinja2

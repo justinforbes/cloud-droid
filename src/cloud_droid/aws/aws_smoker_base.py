@@ -2,7 +2,7 @@
 
 import abc
 
-from smoker import BaseSmoker
+from smoker_base import BaseSmoker
 
 
 class AwsSmoker(BaseSmoker, abc.ABC):
