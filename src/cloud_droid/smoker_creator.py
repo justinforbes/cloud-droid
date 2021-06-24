@@ -2,7 +2,12 @@ import os
 import re
 import argparse
 
-from droid import list_cloud_providers, list_smokers_fnames, SMOKERS_DIR_NAME
+from droid import (
+    list_cloud_providers,
+    list_smokers_fnames,
+    get_class_name_from_smoker_name,
+    SMOKERS_DIR_NAME
+)
 
 from jinja2 import Template
 from welcome import home
@@ -25,12 +30,20 @@ def main(cloud_provider, smoker_name):
     smoker_dir = os.path.join(SCRIPT_DIR, cloud_provider, SMOKERS_DIR_NAME)
     output_fpath = os.path.join(smoker_dir, f"{smoker_name}.py")
     output_config_fpath = os.path.join(smoker_dir, f"{smoker_name}.yaml")
+
     with open(template_fpath) as fd:
         template = Template(fd.read())
+
         with open(output_fpath, "w") as output_fd:
-            output_fd.write(template.render(smoker_name=smoker_name))
+            smoker_class_name = get_class_name_from_smoker_name(smoker_name)
+            output_fd.write(template.render(
+                smoker_class_name=smoker_class_name,
+                smoker_name=smoker_name
+            ))
+
         with open(output_config_fpath, "w") as output_fd:
-            output_fd.write(template.render(smoker_name=smoker_name))
+            output_fd.write('my_variable: "variable_value"')
+
     print(f"\nSmoker to be implemented can be found here "
           f"{os.path.relpath(output_fpath)}\nand the corresponding config "
           f"here {os.path.relpath(output_config_fpath)}\n")

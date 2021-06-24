@@ -3,3 +3,4 @@ colorama
 jinja2
 pyfiglet
 termcolor
+PyYAML
