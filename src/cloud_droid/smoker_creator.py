@@ -22,12 +22,18 @@ def smoker_name_type(value):
 
 def main(cloud_provider, smoker_name):
     template_fpath = os.path.join(SCRIPT_DIR, cloud_provider, TEMPLATE_FNAME)
-    output_fpath = os.path.join(SCRIPT_DIR, cloud_provider, SMOKERS_DIR_NAME, f"{smoker_name}.py")
+    smoker_dir = os.path.join(SCRIPT_DIR, cloud_provider, SMOKERS_DIR_NAME)
+    output_fpath = os.path.join(smoker_dir, f"{smoker_name}.py")
+    output_config_fpath = os.path.join(smoker_dir, f"{smoker_name}.yaml")
     with open(template_fpath) as fd:
         template = Template(fd.read())
         with open(output_fpath, "w") as output_fd:
             output_fd.write(template.render(smoker_name=smoker_name))
-    print(f"\nSmoker to be implemented can be found here {os.path.relpath(output_fpath)}\n")
+        with open(output_config_fpath, "w") as output_fd:
+            output_fd.write(template.render(smoker_name=smoker_name))
+    print(f"\nSmoker to be implemented can be found here "
+          f"{os.path.relpath(output_fpath)}\nand the corresponding config "
+          f"here {os.path.relpath(output_config_fpath)}\n")
 
 
 if __name__ == "__main__":

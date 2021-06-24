@@ -2,7 +2,7 @@
   <img src="./images/cloud-droid.png">
 </p>
 
-***Cloud Droid*** is a platform designed to manage Incident and Response Simulations; you can execute controlled actions that let you test your Incident Response plan in realistic scenarios.
+***Cloud Droid*** is a tool designed to manage Incident and Response Simulations; you can execute controlled actions that let you test your Incident Response plan in realistic scenarios.
 
 The main goal of ***Cloud Droid*** is to provide red teaming exercises as code, generating simulations against attack scenarios and highlighting possible failures in your incident response plan. The tests are called ***Smokers***, each one executing real actions and then cleaning up the resources created during execution.
 
@@ -93,3 +93,14 @@ Ways you can contribute:
 ### Code of Conduct
 
 This project adheres to the Linux Foundation [Code of Conduct](https://events.linuxfoundation.org/about/code-of-conduct/) available on the event page. By participating, you are expected to honor this code.
+
+# TODO:
+* droid executor (READY)
+* python smoker_factory.py --name tanto --service s3 --provider aws: creates the template for you to implement a smoker: jinja2
+* smoker_utils.py: utilities to be reused within different smokers:
+  * tags
+  * s3?
+  * sns?
+  * assume_roles
+  * boto3.client: move it to
+  * logger (done)
