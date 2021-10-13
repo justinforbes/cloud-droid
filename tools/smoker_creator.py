@@ -10,7 +10,7 @@ sys.path.append(CD_DIR)
 from droid import list_cloud_providers, list_smokers_fnames
 
 
-SMOKERS_DIR = os.path.join(CD_DIR, "smokers")
+SMOKERS_DIR = "smokers"
 SMOKERS_FNAME_RE = r"^[^_]+_[^_]+.*.py$"
 
 
@@ -79,7 +79,7 @@ def load_template(cloud_provider, class_name):
 def create_code(cloud_provider, service_name, smoker_action):
     class_name = get_class_name_from_args(service_name, smoker_action)
     fname = os.path.join(
-        SMOKERS_DIR, args.cloud_provider, f"{args.service_name}_{args.smoker_action}.py"
+        CD_DIR, args.cloud_provider, SMOKERS_DIR, f"{args.service_name}_{args.smoker_action}.py"
     )
     file_content = load_template(cloud_provider, class_name)
     with open(fname, "w") as fd:
@@ -110,11 +110,20 @@ if __name__ == "__main__":
     if args.service_name not in existing_services:
         nl = "\n"
         bullet = f"{nl} *"
-        print(
-            f"There are no smokers for the service {args.service_name}. "
-            f"All the services we have are: {bullet.join(existing_services)}"
-            f"{nl}{nl}Do you still want to continue with {args.service_name}? (y/n)"
-        )
+        # TODO: what if existing_services is empty? anyway, existing_services should start with a bullet
+        if not existing_services:
+            print(
+                f"Currently there are no smokers at all for {args.cloud_provider}."
+                f"{nl}{nl}Do you still want to continue with {args.service_name}? (y/n)"
+            )
+        else:
+            existing_services = bullet.join(set(existing_services))
+            existing_services = bullet + existing_services
+            print(
+                f"There are no smokers for the service {args.service_name}. "
+                f"All the services we have are: {existing_services}"
+                f"{nl}{nl}Do you still want to continue with {args.service_name}? (y/n)"
+            )
         yes = {"yes", "y"}
         no = {"no", "n"}
         while True:
