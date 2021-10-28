@@ -2,7 +2,7 @@
 
 import logging
 
-logger = logging.getLogger("cloud-droid")
+logger = logging.getLogger("Cloud Droid")
 log_format = (
     "%(asctime)s [%(levelname)s]: %(filename)s(%(funcName)s:%(lineno)s) >> %(message)s"
 )
@@ -11,8 +11,8 @@ logFormatter = logging.Formatter(log_format)
 
 
 def test_message():
-    logger.warning("Testing test for loggin s3 droid")
-    logger.warning("other message to be more fancy")
-    logger.error("ups this is a test ERROR message not worries")
-    logger.info("Im done, this is a info level message")
+    logger.warning("Droid S3 logging test")
+    logger.warning("This is a WARNING level message")
+    logger.error("oops! This is a test ERROR message, don't worry")
+    logger.info("This is a INFO level message")
     return 0
