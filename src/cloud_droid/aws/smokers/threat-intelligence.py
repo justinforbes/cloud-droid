@@ -1,7 +1,5 @@
 import os
 import time
-from botocore.exceptions import ClientError
-
 from ..utils.aws_ec2_utils import create_sg
 from ..utils.aws_ec2_utils import create_ec2_instance
 from ..utils.aws_ec2_utils import describe_ec2_instance
