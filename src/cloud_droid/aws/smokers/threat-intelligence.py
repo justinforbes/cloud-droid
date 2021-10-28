@@ -1,6 +1,5 @@
 import os
 import time
-import logging
 from botocore.exceptions import ClientError
 
 from ..utils.aws_ec2_utils import create_sg
