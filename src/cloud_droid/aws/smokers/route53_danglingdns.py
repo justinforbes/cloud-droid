@@ -22,4 +22,7 @@ class Route53DanglingdnsSmoker(AwsSmoker):
         # This way you can read your config variables
         my_variable = self.config["my_variable"]
         print(f"my_variable = {my_variable}")
+        nicos_variable = self.config["nicos_variable"]
+        print(f"nicos_variable = {nicos_variable}")
+
         print()
