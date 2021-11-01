@@ -1,12 +1,9 @@
 import os
-import time
-from ..utils.aws_ec2_utils import create_sg
-from ..utils.aws_ec2_utils import create_ec2_instance
-from ..utils.aws_ec2_utils import describe_ec2_instance
-from ..utils.aws_ec2_utils import render_template
-from ..utils.aws_ec2_utils import delete_ec2_instance
-from ..utils.aws_ec2_utils import delete_sg
-from ..utils.aws_sqs_utils import send_queue_message
+
+from ..aws_smoker_base import AwsSmoker
+
+# import below the utils that you want, for instance
+from ..utils import aws_ec2 as ec2_utils
 
 
 class ThreatIntelligenceSmoker(AwsSmoker):
@@ -15,7 +12,7 @@ class ThreatIntelligenceSmoker(AwsSmoker):
     def __init__(self):
         config_file_path = os.path.join(
             os.path.dirname(os.path.abspath(__file__)),
-            "route53_danglingdns" + ".yaml"
+            "thread_intelligence" + ".yaml"
         )
         super().__init__(config_file_path)
 
@@ -30,12 +27,14 @@ class ThreatIntelligenceSmoker(AwsSmoker):
 
         queue_url = "https://sqs.us-east-1.amazonaws.com/BLABLA/test-automation"
 
-        sg_id = create_sg()
-        instance_id = create_ec2_instance(sg_id)
-        time.sleep(20)
-        ec2_attributes_dict = describe_ec2_instance(instance_id)
-        ti_feed = render_template(ec2_attributes_dict)
-        delete_ec2_instance(instance_id)
-        time.sleep(60)
-        delete_sg(sg_id)
-        send_queue_message(queue_url,ti_feed)
+        sg_id = ec2_utils.create_sg()
+        instance_id = ec2_utils.create_ec2_instance(sg_id)
+        self.go_to_sleep()
+
+        ec2_attributes_dict = ec2_utils.describe_ec2_instance(instance_id)
+        ti_feed = ec2_utils.render_template(ec2_attributes_dict)
+        ec2_utils.delete_ec2_instance(instance_id)
+        self.go_to_sleep()
+
+        ec2_utils.delete_sg(sg_id)
+        ec2_utils.send_queue_message(queue_url, ti_feed)
