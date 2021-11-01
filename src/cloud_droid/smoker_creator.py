@@ -15,13 +15,13 @@ from welcome import home
 
 SCRIPT_DIR = os.path.dirname(os.path.realpath(__file__))
 TEMPLATE_FNAME = "template.py.jinja2"
-SMOKERS_NAME_RE = r"^[a-z0-9]+_[a-z0-9_]+$"
+SMOKERS_NAME_RE = r"^[a-z0-9_]+$"
 
 
 def smoker_name_type(value):
     # Regex check
     if not re.match(SMOKERS_NAME_RE, value):
-        raise argparse.ArgumentTypeError("should be lower case with a '_' like 'service_functionality'")
+        raise argparse.ArgumentTypeError("smokers names characters can just be alphanumeric or _")
     return value
 
 
@@ -42,7 +42,7 @@ def main(cloud_provider, smoker_name):
             ))
 
         with open(output_config_fpath, "w") as output_fd:
-            output_fd.write('my_variable: "variable_value"')
+            output_fd.write('sleep_time: 60')
 
     print(f"\nSmoker to be implemented can be found here "
           f"{os.path.relpath(output_fpath)}\nand the corresponding config "

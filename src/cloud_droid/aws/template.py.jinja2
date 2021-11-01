@@ -2,7 +2,9 @@ import os
 import boto3
 
 from ..aws_smoker_base import AwsSmoker
-from .. import aws_utils as utils
+
+# import below the utils that you want, for instance
+# from ..utils import aws_ec2
 
 
 class {{ smoker_class_name }}(AwsSmoker):
@@ -23,3 +25,4 @@ class {{ smoker_class_name }}(AwsSmoker):
         my_variable = self.config["my_variable"]
         print(f"my_variable = {my_variable}")
         print()
+

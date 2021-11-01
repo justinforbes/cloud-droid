@@ -1,143 +1,90 @@
 import os
-import sys
+import re
 import argparse
+
 from jinja2 import Template
+from pathlib import Path
+SCRIPT_DIR = Path(os.path.realpath(__file__)).parent
+DROID_SRC_DIR = SCRIPT_DIR / ".." / "src" / "cloud_droid"
 
-WORKING_DIR = os.path.dirname(os.path.realpath(__file__))
-CD_DIR = os.path.join(WORKING_DIR, "..", "src", "cloud_droid")
-sys.path.append(CD_DIR)
+import sys
+sys.path.append(str(DROID_SRC_DIR))
 
-from droid import list_cloud_providers, list_smokers_fnames
-
-
-SMOKERS_DIR = "smokers"
-SMOKERS_FNAME_RE = r"^[^_]+_[^_]+.*.py$"
-
-
-def parse_smoker_names(smoker_fname):
-    smoker_name = smoker_fname[:-3]
-    components = smoker_name.split("_")
-    return components[0], "_".join(components[1:])
+from droid import (
+    list_cloud_providers,
+    list_smokers_fnames,
+    get_class_name_from_smoker_name,
+    SMOKERS_DIR_NAME
+)
+from welcome import home
 
 
-def get_class_name_from_args(service_name, smoker_action):
-    return (
-        f"{service_name.title()}" f"{smoker_action.title().replace('_', '')}" "Smoker"
-    )
+TEMPLATE_FNAME = "template.py.jinja2"
+SMOKERS_NAME_RE = r"^[a-z0-9_]+$"
 
 
-# def list_cloud_providers():
-#     cloud_providers = os.listdir(SMOKERS_DIR)
-#     cloud_providers = map(lambda x: os.path.join(SMOKERS_DIR, x), cloud_providers)
-#     cloud_providers = filter(lambda x: os.path.isdir(x), cloud_providers)
-#     return map(lambda x: os.path.basename(x), cloud_providers)
-
-
-def list_existing_services(cloud_provider):
-    # smokers = os.listdir(os.path.join(SMOKERS_DIR, cloud_provider))
-    # smokers = filter(lambda x: re.match(SMOKERS_FNAME_RE, x), smokers)
-    # parsed_smokers = map(parse_smoker_names, smokers)
-    # return [name[0] for name in parsed_smokers]
-    smokers = list_smokers_fnames(cloud_provider)
-    parsed_smokers = map(parse_smoker_names, smokers)
-    return [name[0] for name in parsed_smokers]
-
-
-
-def check_service_name(value):
-    if value.lower() != value:
-        raise argparse.ArgumentTypeError(
-            f"service_name {value} should be in lower case"
-        )
-    if "_" in value:
-        raise argparse.ArgumentTypeError(
-            f"service_name {value} cannot have '_' characters"
-        )
+def smoker_name_type(value):
+    # Regex check
+    if not re.match(SMOKERS_NAME_RE, value):
+        raise argparse.ArgumentTypeError("smokers names characters can just be alphanumeric or _")
     return value
 
 
-def check_smoker_action(value):
-    if value.lower() != value:
-        raise argparse.ArgumentTypeError(
-            f"smoker_action {value} should be in lower case"
-        )
-    return value
+def main(cloud_provider, smoker_name):
+    template_fpath = os.path.join(DROID_SRC_DIR, cloud_provider, TEMPLATE_FNAME)
+    smoker_dir = os.path.join(DROID_SRC_DIR, cloud_provider, SMOKERS_DIR_NAME)
+    output_fpath = os.path.join(smoker_dir, f"{smoker_name}.py")
+    output_config_fpath = os.path.join(smoker_dir, f"{smoker_name}.yaml")
 
-
-def load_template(cloud_provider, class_name):
-    template_path = os.path.join(WORKING_DIR, cloud_provider, "template.j2")
-    if not os.path.exists(template_path):
-        sys.stderr.write(f"No template file {template_path}\n")
-        sys.exit(1)
-
-    with open(template_path) as fd:
+    with open(template_fpath) as fd:
         template = Template(fd.read())
 
-    return template.render(smoker_class_name=class_name)
+        with open(output_fpath, "w") as output_fd:
+            smoker_class_name = get_class_name_from_smoker_name(smoker_name)
+            output_fd.write(template.render(
+                smoker_class_name=smoker_class_name,
+                smoker_name=smoker_name
+            ))
 
+        with open(output_config_fpath, "w") as output_fd:
+            output_fd.write('sleep_time: 60')
 
-def create_code(cloud_provider, service_name, smoker_action):
-    class_name = get_class_name_from_args(service_name, smoker_action)
-    fname = os.path.join(
-        CD_DIR, args.cloud_provider, SMOKERS_DIR, f"{args.service_name}_{args.smoker_action}.py"
-    )
-    file_content = load_template(cloud_provider, class_name)
-    with open(fname, "w") as fd:
-        fd.write(file_content)
-    return class_name, fname, file_content
+    print(f"\nSmoker to be implemented can be found here "
+          f"{os.path.relpath(output_fpath)}\nand the corresponding config "
+          f"here {os.path.relpath(output_config_fpath)}\n")
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(
-        description="Create the template to implement your own smoker.",
+    home()
+    msg = (
+        "Cloud Droid smokers generator tool.\n "
+        "https://github.com/cloud-sniper/cloud-droid"
     )
+    print(msg)
+    print()
+
+    parser = argparse.ArgumentParser(
+        description="Create your own smoker tests."
+    )
+    # TODO: remove hardcoded version
+    argparse.version="version: 2.0 - https://github.com/cloud-sniper/cloud-droid"
     parser.add_argument(
         "cloud_provider", help="Cloud provider", choices=list_cloud_providers(),
     )
-    parser.add_argument(
-        "service_name",
-        type=check_service_name,
-        help="Name of the service you want your smoker for. Examples: s3, cloudtrail",
-    )
-    parser.add_argument(
-        "smoker_action",
-        type=check_smoker_action,
-        help="Name of the action the smoker will perform",
+    smoker_name_arg = parser.add_argument(
+        "smoker_name",
+        default="",
+        type=smoker_name_type,
+        help="Name of the smoker to be created. Example: s3_public",
     )
     args = parser.parse_args()
-    existing_services = list_existing_services(args.cloud_provider)
 
-    if args.service_name not in existing_services:
-        nl = "\n"
-        bullet = f"{nl} *"
-        # TODO: what if existing_services is empty? anyway, existing_services should start with a bullet
-        if not existing_services:
-            print(
-                f"Currently there are no smokers at all for {args.cloud_provider}."
-                f"{nl}{nl}Do you still want to continue with {args.service_name}? (y/n)"
-            )
-        else:
-            existing_services = bullet.join(set(existing_services))
-            existing_services = bullet + existing_services
-            print(
-                f"There are no smokers for the service {args.service_name}. "
-                f"All the services we have are: {existing_services}"
-                f"{nl}{nl}Do you still want to continue with {args.service_name}? (y/n)"
-            )
-        yes = {"yes", "y"}
-        no = {"no", "n"}
-        while True:
-            choice = input().lower()
-            if choice in yes:
-                break
-            elif choice in no:
-                sys.stderr.write("Aborting...\n")
-                sys.exit(1)
-            else:
-                sys.stdout.write("Please respond with 'y' or 'n'\n")
-
-    class_name, fname, file_content = create_code(
-        args.cloud_provider, args.service_name, args.smoker_action
-    )
-    print("Class created: \n\t" + class_name)
-    print("File created: \n\t" + os.path.relpath(fname))
+    #validate smoker name:
+    smokers_fnames = list_smokers_fnames(args.cloud_provider)
+    smokers_names = [x[:-3] for x in smokers_fnames]
+    if args.smoker_name in smokers_names:
+        raise argparse.ArgumentError(
+            smoker_name_arg,
+            f"{args.smoker_name} already exists"
+        )
+    main(args.cloud_provider, args.smoker_name)
