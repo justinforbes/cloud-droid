@@ -11,8 +11,9 @@ logging.basicConfig(level=logging.INFO,
 s = boto3.session.Session(region_name=os.environ['AWS_REGION'])
 sqs = s.client('sqs')
 
+
 def send_queue_message(queue_url, ti_feed):
-    #print("SQS POST", ti_feed)
+    print("SQS POST", ti_feed)
 
     try:
         response = sqs.send_message(QueueUrl=queue_url,
@@ -23,4 +24,4 @@ def send_queue_message(queue_url, ti_feed):
     else:
         return response
 
-    #print("Message sent",)
+    print("Message sent",)

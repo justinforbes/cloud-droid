@@ -10,6 +10,7 @@ r_ec2 = s.resource('ec2')
 ec2 = s.client('ec2')
 sts = s.client('sts')
 
+
 def create_sg():
 
     security_group = r_ec2.create_security_group(
@@ -36,14 +37,14 @@ def create_sg():
     )
 
     sg_id = security_group.id
-    #print(f'Security Group {sg_id} has been created')
+    print(f'Security Group {sg_id} has been created')
     return sg_id
 
 
 def delete_sg(sg_id):
     security_group = r_ec2.SecurityGroup(sg_id)
     security_group.delete()
-    #print(f'Security Group {sg_id} has been deleted')
+    print(f'Security Group {sg_id} has been deleted')
 
 
 def create_ec2_instance(sg_id):
@@ -92,7 +93,7 @@ def create_ec2_instance(sg_id):
     )
 
     instance_id = ec2_instance[0].id
-    #print(f'Instance {instance_id} has been created')
+    print(f'Instance {instance_id} has been created')
     return instance_id
 
 
@@ -108,7 +109,7 @@ def describe_ec2_instance(ec2_id):
             ec2_id,
         ],
     )
-    #print(f'Instance {ec2_id} attributes:')
+    print(f'Instance {ec2_id} attributes:')
 
     for reservation in response['Reservations']:
 
@@ -130,7 +131,7 @@ def delete_ec2_instance(ec2_id):
         ],
     )
     instance.terminate()
-    #print(f'Instance {ec2_id} deleted')
+    print(f'Instance {ec2_id} deleted')
 
 
 def render_template(ec2_attributes_dict):
@@ -257,5 +258,5 @@ def render_template(ec2_attributes_dict):
 
     j2_template = Template(template)
     ti_feed = j2_template.render(data)
-    #print("SQS POST", ti_feed)
+    print("Render generated")
     return ti_feed

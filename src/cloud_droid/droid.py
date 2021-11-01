@@ -55,10 +55,8 @@ def main(cloud_provider, smoker_name, to_bucket, run_all):
 if __name__ == "__main__":
     home()
     msg = (
-        "Cloud Droid is the redteam as a code for Incident Response "
-        "Automated 'Simulations'.\n This is a simple scripting tool to create "
-        "differents TTPs.\n The goal is to generate actual smoke events "
-        "and test alerts in your SIEM.\n "
+        "Cloud Droid is the redteam as a code tool for Incident Response Automated Simulations.\n"
+        "The goal is to evaluate the security posture of cloud environments generating different security findings.\n"
         "https://github.com/cloud-sniper/cloud-droid"
     )
     print(msg)
