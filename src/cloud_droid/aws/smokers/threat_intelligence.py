@@ -21,10 +21,6 @@ class ThreatIntelligenceSmoker(AwsSmoker):
 
     # MODIFY THIS FUNCTION IMPLEMENTATION
     def simulate(self):
-        '''
-        9. remove hardcoded queue + webhook
-        '''
-
         slack_webhook.message_to_slack("TI feeds", self.config.get("webhook_url"))
 
         sg_id = ec2_utils.create_sg()
