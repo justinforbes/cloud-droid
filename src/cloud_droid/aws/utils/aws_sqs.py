@@ -24,4 +24,4 @@ def send_queue_message(queue_url, ti_feed):
     else:
         return response
 
-    print("Message sent",)
+    logger.info("Message sent")

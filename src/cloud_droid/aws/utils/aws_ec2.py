@@ -1,8 +1,13 @@
 import boto3
 import os
 import json
+import logging
 from datetime import date, datetime
 from jinja2 import Template
+
+logger = logging.getLogger()
+logging.basicConfig(level=logging.INFO,
+                    format='%(asctime)s: %(levelname)s: %(message)s')
 
 s = boto3.session.Session(region_name=os.environ['AWS_REGION'])
 
@@ -37,14 +42,14 @@ def create_sg():
     )
 
     sg_id = security_group.id
-    print(f'Security Group {sg_id} has been created')
+    logger.info(f'Security Group {sg_id} has been created')
     return sg_id
 
 
 def delete_sg(sg_id):
     security_group = r_ec2.SecurityGroup(sg_id)
     security_group.delete()
-    print(f'Security Group {sg_id} has been deleted')
+    logger.info(f'Security Group {sg_id} has been deleted')
 
 
 def create_ec2_instance(sg_id):
@@ -93,7 +98,7 @@ def create_ec2_instance(sg_id):
     )
 
     instance_id = ec2_instance[0].id
-    print(f'Instance {instance_id} has been created')
+    logger.info(f'Instance {instance_id} has been created')
     return instance_id
 
 
@@ -109,14 +114,15 @@ def describe_ec2_instance(ec2_id):
             ec2_id,
         ],
     )
-    print(f'Instance {ec2_id} attributes:')
+
+    logger.info(f'Processing {ec2_id} attributes:')
 
     for reservation in response['Reservations']:
 
         ec2_attributes = (json.dumps(
                 reservation,
-                indent=4,
-                default=json_datetime_serializer
+                default=json_datetime_serializer,
+                indent=4
             )
         )
         ec2_attributes_dict = json.loads(ec2_attributes)
@@ -131,7 +137,7 @@ def delete_ec2_instance(ec2_id):
         ],
     )
     instance.terminate()
-    print(f'Instance {ec2_id} deleted')
+    logger.info(f'Instance {ec2_id} deleted')
 
 
 def render_template(ec2_attributes_dict):
@@ -240,7 +246,7 @@ def render_template(ec2_attributes_dict):
         "account_id": str(sts.get_caller_identity()["Account"]),
         "region": str(s.region_name),
         "subnet_id": str(ec2_attributes_dict['Instances'][0]['SubnetId']),
-        "src_ip": "9111.164.189.99",
+        "src_ip": "111.164.189.99",
         "instance_id": str(ec2_attributes_dict['Instances'][0]['InstanceId']),
         "country": "China",
         "city": "Tianjin",
@@ -248,7 +254,7 @@ def render_template(ec2_attributes_dict):
         "org": "China Unicom Liaoning",
         "isp": "China Unicom Liaoning",
         "asn": "4837",
-        "vpc_id": "str(ec2_attributes_dict['Instances'][0]['VpcId']",
+        "vpc_id": str(ec2_attributes_dict['Instances'][0]['VpcId']),
         "sg_name": str(ec2_attributes_dict['Instances'][0]['SecurityGroups'][0]['GroupName']),
         "sg_id": str(ec2_attributes_dict['Instances'][0]['SecurityGroups'][0]['GroupId']),
         "tag_key": "TTE",
@@ -258,5 +264,5 @@ def render_template(ec2_attributes_dict):
 
     j2_template = Template(template)
     ti_feed = j2_template.render(data)
-    print("Render generated")
+    logger.info("Render generated")
     return ti_feed

@@ -1,1 +1,3 @@
-sleep_time: 60
+sleep_time: 120
+queue_url: #[complete with url]
+webhook_url: #[complete with url]

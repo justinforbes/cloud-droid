@@ -2,8 +2,9 @@ import json
 import logging
 import requests
 
-log = logging.getLogger()
-log.setLevel(logging.INFO)
+logger = logging.getLogger()
+logging.basicConfig(level=logging.INFO,
+                    format='%(asctime)s: %(levelname)s: %(message)s')
 
 
 def message_to_slack(message, webhook_url):
@@ -12,14 +13,14 @@ def message_to_slack(message, webhook_url):
 
         data = {
             'text': '***************************************************************\n\n'
-                    + '* Starting incident simulation for: * ' + message + '\n'
+                    + '*Starting incident response simulation for:* ' + message + '\n'
                     + '***************************************************************',
-            'username': 'CLOUD SNIPER BUDDY',
+            'username': 'IR AUTOMATION BUDDY',
             'icon_emoji': ':robot_face:'
         }
 
         response = requests.post(webhook_url, data=json.dumps(data), headers={'Content-Type': 'application/json'})
-        log.info('Sending message to Slack. Response: ' + str(response.text) + ' Response Code: ' + str(response.status_code))
+        logger.info('Sending message to Slack. Response: ' + str(response.text) + ' Response Code: ' + str(response.status_code))
 
     except Exception as e:
-        log.info("Message could not be send to Slack: " + str(e))
+        logger.info("Message could not be send to Slack: " + str(e))
