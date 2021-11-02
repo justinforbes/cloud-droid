@@ -34,10 +34,10 @@ class ThreatIntelligenceSmoker(AwsSmoker):
         ec2_attributes_dict = ec2_utils.describe_ec2_instance(instance_id)
         ti_feed = ec2_utils.render_template(ec2_attributes_dict)
         sqs_utils.send_queue_message(self.config.get("queue_url"), ti_feed)
-        #self.go_to_sleep()
+        self.go_to_sleep()
 
-        #ec2_utils.delete_ec2_instance(instance_id)
-        #self.go_to_sleep()
+        ec2_utils.delete_ec2_instance(instance_id)
+        self.go_to_sleep()
 
-        #ec2_utils.delete_sg(sg_id)
+        ec2_utils.delete_sg(sg_id)
 
