@@ -1,27 +1,19 @@
 import os
-import sys
-import logging
 import boto3
 
 from ..aws_smoker_base import AwsSmoker
-
-# standar logger configuration for template
-logging.basicConfig(stream=sys.stdout,
-                    format="%(asctime)s;%(levelname)s;%(message)s")
-log = logging.getLogger("{{ smoker_name }}")
-log.setLevel(logging.INFO)
 
 # import below the utils that you want, for instance
 # from ..utils import aws_ec2
 
 
-class {{ smoker_class_name }}(AwsSmoker):
+class S3PublicSmoker(AwsSmoker):
 
     # DO NOT MODIFY THIS CONSTRUCTOR
     def __init__(self):
         config_file_path = os.path.join(
             os.path.dirname(os.path.abspath(__file__)),
-            "{{ smoker_name }}" + ".yaml"
+            "s3_public" + ".yaml"
         )
         super().__init__(config_file_path)
 
@@ -33,4 +25,3 @@ class {{ smoker_class_name }}(AwsSmoker):
         my_variable = self.config["my_variable"]
         print(f"my_variable = {my_variable}")
         print()
-

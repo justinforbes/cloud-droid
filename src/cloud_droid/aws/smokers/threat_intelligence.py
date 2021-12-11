@@ -5,7 +5,7 @@ from ..aws_smoker_base import AwsSmoker
 # import below the utils that you want, for instance
 from ..utils import aws_ec2 as ec2_utils
 from ..utils import aws_sqs as sqs_utils
-from ..utils import slack_webhook as slack_webhook
+from ...general_utils import slack_webhook as slack_webhook
 
 
 class ThreatIntelligenceSmoker(AwsSmoker):

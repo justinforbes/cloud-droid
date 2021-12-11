@@ -11,7 +11,7 @@ import sys
 sys.path.append(str(DROID_SRC_DIR))
 
 from droid import (
-    list_cloud_providers,
+    list_smoker_providers,
     list_smokers_fnames,
     get_class_name_from_smoker_name,
     SMOKERS_DIR_NAME
@@ -47,7 +47,7 @@ def main(cloud_provider, smoker_name):
             ))
 
         with open(output_config_fpath, "w") as output_fd:
-            output_fd.write('sleep_time: 60')
+            output_fd.write('# base configuration file')
 
     print(f"\nSmoker to be implemented can be found here "
           f"{os.path.relpath(output_fpath)}\nand the corresponding config "
@@ -69,7 +69,7 @@ if __name__ == "__main__":
     # TODO: remove hardcoded version
     argparse.version="version: 2.0 - https://github.com/cloud-sniper/cloud-droid"
     parser.add_argument(
-        "cloud_provider", help="Cloud provider", choices=list_cloud_providers(),
+        "cloud_provider", help="Cloud provider", choices=list_smoker_providers(),
     )
     smoker_name_arg = parser.add_argument(
         "smoker_name",

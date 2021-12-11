@@ -15,7 +15,7 @@ def message_to_slack(message, webhook_url):
             'text': '***************************************************************\n\n'
                     + '*Starting incident response simulation for:* ' + message + '\n'
                     + '***************************************************************',
-            'username': 'IR AUTOMATION BUDDY',
+            'username': 'cloud-droid automation',
             'icon_emoji': ':robot_face:'
         }
 
@@ -23,4 +23,4 @@ def message_to_slack(message, webhook_url):
         logger.info('Sending message to Slack. Response: ' + str(response.text) + ' Response Code: ' + str(response.status_code))
 
     except Exception as e:
-        logger.info("Message could not be send to Slack: " + str(e))
+        logger.error("Message could not be send to Slack: " + str(e))
