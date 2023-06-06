@@ -18,6 +18,7 @@ from requests.packages.urllib3.exceptions import InsecureRequestWarning
 
 # Setup the verbose logger
 logger = logging.getLogger('cloud-droid')
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 # Setup timestamp
 iso_now_time = datetime.datetime.now().isoformat()
@@ -34,22 +35,22 @@ def AWSadminSmoker():
     descript = ' droid smoke iam localuser ' + iso_now_time
     name = ' droid_smoke_user'
     iam = boto3.client('iam')
-    logger.info(' Creating the user droid-ADMIN %s' % iso_now_time)
+    logger.info(' creating the user droid-ADMIN')
     response = iam.create_user(UserName='droid-ADMIN', Tags=TAG)
     user_id = response['User']['UserId']
     user_arn = response['User']['Arn']
     logger.info(
-        ' Attaching the user to "AdministratorAccess" policy %s' % iso_now_time)
+        ' Attaching the user to "AdministratorAccess" policy')
     iam.attach_user_policy(
         UserName='droid-ADMIN',
         PolicyArn='arn:aws:iam::aws:policy/AdministratorAccess'
     )
-    logger.info(' User Created: %s' % iso_now_time +
+    logger.info(' user Created: ' +
                 " ID: " + user_id + " ARN: " + user_arn)
-    logger.info(' Rollback now %s' % iso_now_time)
+    logger.info(' rollback of the user now')
     iam.detach_user_policy(
         UserName='droid-ADMIN',
         PolicyArn='arn:aws:iam::aws:policy/AdministratorAccess'
     )
     iam.delete_user(UserName='droid-ADMIN')
-    logger.info(' DONE %s' % iso_now_time)
+    logger.info(' done!')

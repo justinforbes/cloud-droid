@@ -37,9 +37,8 @@ docker build -t cloud-droid .
 docker run --rm \
     -e AWS_ACCESS_KEY_ID \
     -e AWS_SECRET_ACCESS_KEY \
-    -e AWS_SESSION_TOKEN \
     -e AWS_DEFAULT_REGION=us-east-1 \
-    cloud-droid -s XXXX -B XXXX
+    cloud-droid -s XXXX -b XXXX
 ```
 
 #### Mandatory command options for running ***Cloud Droid***
@@ -60,10 +59,10 @@ You must use the ***-s*** option to run a ***Smoker***.
 
 #### Optional command options to run ***Cloud Droid***
 
-| -b  | Description |
-| --------------|-------------|
-| **True** | Store the results in an S3 bucket |
-| **False** | This is the default option, it prints the output on the console |
+| -b        | Description                       |
+|-----------|-----------------------------------|
+| **true**  | Store the results in an S3 bucket |
+| **false** | Prints the output on the console  |
 
 ### Requirements
 - Docker

@@ -1,4 +1,3 @@
-
 from modules.smokers.SGopenSmoker import SGopenSmoker
 from modules.smokers.PanAuthSmoker import PanAuthSmoker
 from modules.smokers.AWSadminSmoker import AWSadminSmoker
@@ -14,58 +13,41 @@ import argparse
 
 
 def main(args):
-    if args.get('bucket') == True:
+    if args['bucket'] == 'True':
         droid_s3_logger('cloud-droid')
-        if args.get('smoker') == 'test':
-            test_message()
-        if args.get('smoker') == 'sg':
-            SGopenSmoker()
-        if args.get('smoker') == 'pa':
-            PanAuthSmoker()
-        if args.get('smoker') == 'au':
-            AWSadminSmoker()
-        if args.get('smoker') == 'aca':
-            awsConsoleAuthSmoker()
-        if args.get('smoker') == 'ctr':
-            CTrailSmoker()
-        if args.get('smoker') == 's3p':
-            S3PublicSmoker()
-        if args.get('smoker') == 'esb':
-            EBSPublicSmoker()
-        if args.get('smoker') == 'all':
-            SGopenSmoker()
-            PanAuthSmoker()
-            AWSadminSmoker()
-            awsConsoleAuthSmoker()
-            CTrailSmoker()
-            S3PublicSmoker()
-            EBSPublicSmoker()
-    else:
+    elif args['bucket'] == 'False':
         droid_logger('droid')
-        if args.get('smoker') == 'test':
-            test_message()
-        if args.get('smoker') == 'sg':
-            SGopenSmoker()
-        if args.get('smoker') == 'pa':
-            PanAuthSmoker()
-        if args.get('smoker') == 'au':
-            AWSadminSmoker()
-        if args.get('smoker') == 'aca':
-            awsConsoleAuthSmoker()
-        if args.get('smoker') == 'ctr':
-            CTrailSmoker()
-        if args.get('smoker') == 's3p':
-            S3PublicSmoker()
-        if args.get('smoker') == 'esb':
-            EBSPublicSmoker()
-        if args.get('smoker') == 'all':
-            SGopenSmoker()
-            PanAuthSmoker()
-            AWSadminSmoker()
-            awsConsoleAuthSmoker()
-            CTrailSmoker()
-            S3PublicSmoker()
-            EBSPublicSmoker()
+    else:
+        print('Please provide the correct arguments to run the droid')
+
+    if args['smoker'] == 'test':
+        test_message()
+    elif args['smoker'] == 'sg':
+        SGopenSmoker()
+    elif args['smoker'] == 'pa':
+        PanAuthSmoker()
+    elif args['smoker'] == 'au':
+        AWSadminSmoker()
+    elif args['smoker'] == 'aca':
+        awsConsoleAuthSmoker()
+    elif args['smoker'] == 'ctr':
+        CTrailSmoker()
+    elif args['smoker'] == 's3p':
+        S3PublicSmoker()
+    elif args['smoker'] == 'esb':
+        EBSPublicSmoker()
+    elif args['smoker'] == 'all':
+        smokers = [
+            SGopenSmoker,
+            PanAuthSmoker,
+            AWSadminSmoker,
+            awsConsoleAuthSmoker,
+            CTrailSmoker,
+            S3PublicSmoker,
+            EBSPublicSmoker
+        ]
+        for smoker in smokers:
+            smoker()
 
 
 if __name__ == '__main__':
@@ -76,7 +58,7 @@ if __name__ == '__main__':
     droid_parser.add_argument(
         '-s', help='smoker to run', dest='smoker', type=str, required=True)
     droid_parser.add_argument(
-        '-b', help='save the results into a bucket', dest='bucket', type=bool, required=False)
+        '-b', help='save the results into a bucket', dest='bucket', type=str, required=True)
     args = droid_parser.parse_args()
     event_map = {'smoker': args.smoker, 'bucket': args.bucket}
     main(event_map)

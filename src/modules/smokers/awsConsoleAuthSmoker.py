@@ -17,6 +17,7 @@ from requests.packages.urllib3.exceptions import InsecureRequestWarning
 
 # Setup the verbose logger
 logger = logging.getLogger('cloud-droid')
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 # Setup timestamp
 iso_now_time = datetime.datetime.now().isoformat()
@@ -30,7 +31,7 @@ account_id = ''
 
 def awsConsoleAuthSmoker():
     requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
-    logger.info('Testing auth fail to aws console root')
+    logger.info(' testing auth fail to aws console root')
     headers = {
         'Origin': 'https://signin.aws.amazon.com',
         'Upgrade-Insecure-Requests': '1',
@@ -46,23 +47,22 @@ def awsConsoleAuthSmoker():
         'client_id': 'arn%3Aaws%3Aiam%3A%3A015428540659%3Auser%2Fhomepage',
         'redirect_uri': 'https%3A%2F%2Fconsole.aws.amazon.com%2Fconsole%2Fhome%3Fstate%3DhashArgs%2523%26isauthcode%3Dtrue'
     }
-    logger.info(iso_now_time +
-                ' testing user: droid-testing into '+account_id+' account')
+    logger.info(' testing user: droid-testing into '+account_id+' account')
     time.sleep(5)
     response = requests.post(
         'https://signin.aws.amazon.com/authenticate', headers=headers, data=data, verify=False)
-    logger.info(' this is going to take a while ...')
-    time.sleep(5)
-    response = requests.post(
-        'https://signin.aws.amazon.com/authenticate', headers=headers, data=data, verify=False)
-    time.sleep(5)
-    response = requests.post(
-        'https://signin.aws.amazon.com/authenticate', headers=headers, data=data, verify=False)
-    logger.info(' working....')
+    logger.info(' this takes a while ...')
     time.sleep(5)
     response = requests.post(
         'https://signin.aws.amazon.com/authenticate', headers=headers, data=data, verify=False)
     time.sleep(5)
     response = requests.post(
         'https://signin.aws.amazon.com/authenticate', headers=headers, data=data, verify=False)
-    logger.info(iso_now_time + ' done!')
+    logger.info(' still working....')
+    time.sleep(5)
+    response = requests.post(
+        'https://signin.aws.amazon.com/authenticate', headers=headers, data=data, verify=False)
+    time.sleep(5)
+    response = requests.post(
+        'https://signin.aws.amazon.com/authenticate', headers=headers, data=data, verify=False)
+    logger.info(' done!')

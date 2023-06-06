@@ -18,6 +18,7 @@ from requests.packages.urllib3.exceptions import InsecureRequestWarning
 
 # Setup the verbose logger
 logger = logging.getLogger('cloud-droid')
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 # Setup timestamp
 iso_now_time = datetime.datetime.now().isoformat()
@@ -29,7 +30,7 @@ def EBSPublicSmoker():
     ec2 = boto3.resource('ec2')
     snapshot = ec2.Snapshot('')  # put your snapshot ID HERE!
     response = snapshot.describe_attribute(Attribute='createVolumePermission')
-    logger.info(iso_now_time + "reading ebs properties: "+str(response))
+    logger.info(" reading ebs properties: "+str(response))
     response = snapshot.modify_attribute(
         Attribute='createVolumePermission',
         CreateVolumePermission={
@@ -41,7 +42,7 @@ def EBSPublicSmoker():
         }
     )
     response = snapshot.describe_attribute(Attribute='createVolumePermission')
-    logger.info(iso_now_time + "changin permissions: "+str(response))
+    logger.info(" changing permissions: "+str(response))
     response = snapshot.modify_attribute(
         Attribute='createVolumePermission',
         CreateVolumePermission={
@@ -52,7 +53,7 @@ def EBSPublicSmoker():
             ]
         }
     )
-    logger.info(iso_now_time + "rolling back permissions: "+str(response))
+    logger.info(" rolling back permissions: "+str(response))
     response = snapshot.describe_attribute(Attribute='createVolumePermission')
-    logger.info(iso_now_time + "finish: "+str(response))
-    logger.info(iso_now_time + ' done!')
+    logger.info("finishing: "+str(response))
+    logger.info(' done!')

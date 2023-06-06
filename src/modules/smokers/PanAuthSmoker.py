@@ -16,7 +16,9 @@ from requests.packages.urllib3.exceptions import InsecureRequestWarning
 ##### define standard configurations ####
 
 # Setup the verbose logger
+# Setup the verbose logger
 logger = logging.getLogger('cloud-droid')
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 # Setup timestamp
 iso_now_time = datetime.datetime.now().isoformat()
@@ -30,7 +32,7 @@ pano_url = "https://vpn.company.com"
 
 def PanAuthSmoker():
     requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
-    logger.info('Testing panorama auth fail to device')
+    logger.info('Testing panorama auth failure')
     headers = {
         'Origin': pano_url,
         'Upgrade-Insecure-Requests': '1',
@@ -53,14 +55,14 @@ def PanAuthSmoker():
     time.sleep(5)
     response = requests.post(pano_url+'/php/login.php',
                              headers=headers, data=data, verify=False)
-    logger.info(' this is going to take a while ...')
+    logger.info(' this takes a while ...')
     time.sleep(5)
     response = requests.post(pano_url+'/php/login.php',
                              headers=headers, data=data, verify=False)
     time.sleep(5)
     response = requests.post(pano_url+'/php/login.php',
                              headers=headers, data=data, verify=False)
-    logger.info(' working....')
+    logger.info(' still working....')
     time.sleep(5)
     response = requests.post(pano_url+'/php/login.php',
                              headers=headers, data=data, verify=False)

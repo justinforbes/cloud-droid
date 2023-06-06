@@ -1,4 +1,4 @@
-ARG PYTHON_ENV_ARG=3.8
+ARG PYTHON_ENV_ARG=3.9
 
 # Builder stage
 FROM python:${PYTHON_ENV_ARG}-alpine AS builder

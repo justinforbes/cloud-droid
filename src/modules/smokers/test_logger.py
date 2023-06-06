@@ -9,8 +9,7 @@ logFormatter = logging.Formatter(log_format)
 
 
 def test_message():
-    logger.warning("Testing test for loggin s3 droid")
-    logger.warning("other message to be more fancy")
-    logger.error("ups this is a test ERROR message not worries")
-    logger.info("Im done, this is a info level message")
+    logger.warning(" Executing a 'test' smoker")
+    logger.error(" Logging an ERROR level message")
+    logger.info(" Logging an INFO level message")
     return 0
